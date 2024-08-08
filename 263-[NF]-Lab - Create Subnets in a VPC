@@ -1,0 +1,191 @@
+Create Subnets and Allocate IP addresses in an Amazon Virtual Private Cloud (Amazon VPC)
+ 
+
+Objectives
+In this lab, you will:
+
+Summarize the customer scenario
+Create a Amazon Virtual Private Cloud (Amazon VPC) and understand how to create subnets and allocate IP addresses
+Familiarize yourself with the Amazon Web Services (AWS) Management Console
+Develop a solution to the customer's issue in this lab
+Summarize and describe your findings (group activity)
+Duration
+This lab requires approximately 1 hour to complete.
+
+ 
+
+Scenario
+Your role is a cloud support engineer at AWS. During your shift, a customer from a startup company requests assistance regarding a networking issue within their AWS infrastructure. The following is the email and an attachment regarding their architecture:
+
+ 
+
+Ticket from your customer
+Hello, Cloud Support!
+
+I'm new to AWS, and I need help setting up a VPC. Can you please help me through the setup process? I would like to build only the VPC part and would like to make it look something like the following picture. Can you help me ensure  I have around 15,000 private IP addresses in this VPC available?  I would also like the VPC IPv4 CIDR block to be a 192.x.x.x. I don't remember which is a private range though. Can you confirm that? I would also like to allocate at least 50 IP addresses for the public subnet.
+
+Thanks!
+Paulo Santos
+Startup Owner
+
+ 
+
+Customer diagram
+The customer's VPC architecture, which consists of a VPC that requires 15,000 IP addresses, an internet gateway, and a public subnet that requires 50 IP addresses
+
+Figure: In the customer's VPC architecture, the customer needs approximately 15,000 IP addresses for their Seattle office headquarters and 50 IP addresses for their operations department, which will be in the public subnet.
+
+ 
+
+AWS service restrictions
+In this lab environment, access to AWS services and service actions might be restricted to the ones that you need to complete the lab instructions. You might encounter errors if you attempt to access other services or perform actions beyond the ones that this lab describes.
+
+ 
+
+Accessing the AWS Management Console
+At the top of these instructions, choose Start Lab to launch your lab.
+A Start Lab panel opens, and it displays the lab status.
+
+Tip: If you need more time to complete the lab, choose the Start Lab button again to restart the timer for the environment.
+
+Wait until you see the message Lab status: ready, then close the Start Lab panel by choosing the X.
+
+At the top of these instructions, choose AWS.
+This opens the AWS Management Console in a new browser tab. The system will automatically log you in.
+
+Tip: If a new browser tab does not open, a banner or icon is usually at the top of your browser with a message that your browser is preventing the site from opening pop-up windows. Choose the banner or icon and then choose Allow pop ups.
+
+Arrange the AWS Management Console tab so that it displays along side these instructions. Ideally, you will be able to see both browser tabs at the same time so that you can follow the lab steps more easily.
+
+ 
+
+Task 1: Investigate the customer's needs
+In previous courses, you covered the purpose of IP subnetting and the use of Classless Inter-Domain Routing (CIDR) notations. As you go through this lab, think about which CIDR notation the customer should use for the VPC and subnet.
+
+Before you start, quickly go over what a VPC is:
+
+A VPC is like a data center but in the cloud. It is logically isolated from other virtual networks, and you can use a VPC to spin up and launch your AWS resources within minutes.
+Resources within a VPC communicate with each other through private IP addresses. An instance needs a public IP address for it to communicate outside the VPC. The VPC needs networking resources, such as an internet gateway and a route table, for the instance to reach the internet.
+A CIDR block is a range of private IP addresses that is used within the VPC (for example, the /16 number that you see next to an IP address).
+A subnet is a range of IP addresses within your VPC.
+To determine the CIDR range, you can use the following third-party calculator: https://www.subnet-calculator.com/
+To determine the recommended range of private IP addresses that you can use, you can refer to the following guide: https://datatracker.ietf.org/doc/html/rfc1918.
+For task 1, you will investigate the customer's needs and build a VPC environment based on the customer's requirements. You then build a short and simple walkthrough for the customer to follow.
+
+In the scenario, Paulo, who is the customer requesting assistance, has switched to using AWS and would like assistance in launching his first VPC. He has some networking knowledge but is new to AWS. You know that he needs around 15,000 IP addresses in the private range within his VPC, and he would like a public subnet. He would like to allocate at least 50 IP addresses in the public subnet.   
+
+For the customer, you will build one VPC and a guide about how to launch one.
+
+At the upper-right of these instructions, choose AWS. The AWS Management Console opens in a new tab.
+
+Once you are in the AWS console, type and search for VPC in the search bar on the top-left corner. Select VPC from the list.
+
+Tip: Alternatively, You can also find VPC under Services - Networking & Content Delivery in the top left corner
+
+The search bar can be used to find the Amazon VPC service. Once you find the service, select it.
+
+Figure: AWS Management Console search bar.
+
+You are now in the Amazon VPC dashboard. You use the Amazon Virtual Private Cloud (Amazon VPC) service to build your VPC.
+
+Choose the Launch VPC Wizard button to launch your first VPC. This will launch you into a step by step process to set up a VPC with it's basic components.
+
+Note
+
+When building a VPC and its components, follow the order of the navigation pane on the left side to build your VPC and its resources in order. The labs will cover this process in more detail.
+
+The Launch VPC Wizard button in the Amazon VPC dashboard
+
+Figure: Use the Launch VPC Wizard button to launch a VPC.
+
+Once in the wizard, use the following steps to launch the VPC. These steps provide additional information and guide you through an additional exercise. When assigning the CIDR block, recall the meaning behind each range and assign a block ranging from /16 netmask (65,536 IP) and /28 (16 IP addresses).
+
+Configure the following options:
+
+For IPv6 CIDR block, leave No IPv6 CIDR Block selected. You will not be using IPv6 in this lab.
+For the VPC name, enter First VPC
+For Public subnet's IPv4 CIDR, this option prefills. Input the correct VPC CIDR that you are using; however, keep in mind that the public subnet's CIDR must be smaller then the VPC CIDR block, and it must be able to include at least 50 IP addresses.
+For Availability Zone, choose No Preference.
+For Subnet name, leave this option set to Public subnet.
+Leave the remaining options set to their default settings.
+At the lower-right, choose Create VPC.  
+For Select a VPC Configuration, consider the following information.
+
+Take a moment to read over the four options that you can configure the VPC with.
+
+Question: Which VPC configurations do you think have been used in previous labs?
+
+If you thought they have been using VPCs with one subnet, that is correct. Depending on the needs of the customer, they might be using multiple public only or public and private subnets. It depends on what they need to accomplish.
+For this task, Brock wants to use a VPC with a Single Public Subnet according to his diagram.
+
+Question: Why do you think there are private and public subnets?
+
+Public subnets are for instances that can be accessed by the internet and that access the internet with a public IP and internet gateway. Private subnets keep instances private and cannot be addressed by the internet. For instances within a private subnet to connect to the internet, they will need something called a network address translation (NAT) gateway, which a later section covers in more detail.
+
+Now configure the following options:
+
+Choose VPC with a Single Public Subnet.
+Choose Select to move to the next step.
+For VPC with Public a Single Public Subnet, configure the following information.
+
+The IPv4 CIDR block box prefills with a CIDR notation and block. Delete this information.
+
+To input the correct 192.x.x.x private address range and CIDR block that fits 15,000 IP addresses or the next closest option above 15,000, use the following information.
+
+To look up RFC 1918, use https://datatracker.ietf.org/doc/html/rfc1918.
+Use the following IP address calculator: https://www.subnet-calculator.com/.
+Question: Why do you think private IP addresses are used within the VPC?Private IP addresses are not reachable over or from the internet. This keeps your resources and its communication between your resources private within the VPC.
+
+If you were stuck on any of the previous steps, check the following image to see an example of how to create a VPC that resembles the customer's request. When configuring a VPC:
+Step 2, VPC with a Single Public Subnet is configured with the following with the following parameters: The IPv4 CIDR block is 192.168.0.0/18, the IPv6 CIDR block is set to the default, the VPC name is "First VPC", the Public subnet's IPv4 CIDR is 192.168.1.0/26, the Availability Zone is set to No Preference, the Subnet name is "Public subnet," and the remaining options are left at their default settings.
+
+When configuring a VPC, Step 2: VPC with a Single Public Subnet is configured with the following parameters: The IPv4 CIDR block is 192.168.0.0/18, the IPv6 CIDR block is set to the default, the VPC name is "First VPC", the Public subnet's IPv4 CIDR is 192.168.1.0/26, the Availability Zone is set to No Preference, the Subnet name is "Public subnet," and the remaining options are left at their default settings.
+
+Figure: Example of a completed VPC
+
+ 
+
+Once you have successfully created the VPC, you should see a pop-up message that says VPC Successfully Created. To verify that your VPC is available, in the left navigation menu, choose Your VPCs. You should see your VPC listed.
+
+Message indicating that the VPC was successfully created
+
+Figure: VPC successfully created.
+
+ 
+
+Task 2: Send the response to the customer (group activity)
+In groups of two, submit your findings.
+
+Person 1 acts as Brock the customer, and person 2 acts as the cloud support engineer. Person 2 walks through how they would build the VPC with person 1.
+
+Note
+
+This task should take 30 minutes. If a group activity is not possible, have one student walk through their findings with the class.
+
+ 
+
+Lab Complete 
+ Congratulations! You have completed the lab.
+
+Select End Lab at the top of this page and then select Yes to confirm that you want to end the lab.
+A panel will appear, indicating that "DELETE has been initiated... You may close this message box now."
+Select the X in the top right corner to close the panel.
+ 
+
+Recap
+In this lab, you have investigated the customer's environment and analyzed the customer's request to build a successful walkthrough of their environment. Through this experience, you learned how to launch a VPC, which CIDR block and range to give the customer, and how to show the customer to build a VPC.
+
+ 
+
+Additional resources
+What is Amazon VPC?
+IP Addressing in your VPC
+RFC 1918
+VPC CIDR
+Subnet calculator
+For more information about AWS Training and Certification, see https://aws.amazon.com/training/.
+
+Your feedback is welcome and appreciated.
+If you would like to share any suggestions or corrections, please provide the details in our AWS Training and Certification Contact Form.
+
+© 2022 Amazon Web Services, Inc. and its affiliates. All rights reserved. This work may not be reproduced or redistributed, in whole or in part, without prior written permission from Amazon Web Services, Inc. Commercial copying, lending, or selling is prohibited.
